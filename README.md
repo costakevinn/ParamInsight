@@ -62,3 +62,8 @@ All results (data, plots, analysis) are stored in the `data/`, `plots/`, and `re
 ParamInsight was developed to **assist the scientific and data analysis community** in performing parameter inference with **transparent, fully customizable models**.  
 It demonstrates the ability to **implement statistical methods from scratch**, generate meaningful insights, and visualize results cleanly.
 
+## License
+
+This project is licensed under the MIT License – see the [LICENSE](LICENSE) file for details.
+
+
