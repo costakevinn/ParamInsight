@@ -9,11 +9,6 @@ venv/
 # Jupyter Notebook checkpoints
 .ipynb_checkpoints/
 
-# Docker stuff (se quiser ignorar imagens locais)
+# Docker stuff
 *.tar
 *.img
-
-# Data, plots, results se você não quer subir
-# data/
-# plots/
-# results/
