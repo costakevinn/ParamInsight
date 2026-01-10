@@ -10,7 +10,7 @@ This project demonstrates capabilities in **data analysis, statistical inference
 
 **Model:** F(x) = a * log(b * x)
 
-**Observational Data (Transposed):**
+**Observational Data:**
 
 | x     | 1.0   | 1.5   | 2.0   | 2.5   | 3.0   | 3.5   | 4.0   | 4.5   | 5.0   | ... |
 |-------|-------|-------|-------|-------|-------|-------|-------|-------|-------|-----|
