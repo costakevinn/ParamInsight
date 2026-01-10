@@ -1,0 +1,19 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+
+# Python virtual environments
+venv/
+.env/
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Docker stuff (se quiser ignorar imagens locais)
+*.tar
+*.img
+
+# Data, plots, results se você não quer subir
+# data/
+# plots/
+# results/
