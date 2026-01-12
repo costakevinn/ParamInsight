@@ -71,7 +71,6 @@ a = 1.5, b = 0.5
   - Trace plots
   - Posterior histograms
   - Parameter correlation plots  
-- Fully reproducible using fixed random seed
 
 ---
 
