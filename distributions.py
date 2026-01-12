@@ -1,54 +1,72 @@
 # distributions.py
-# Distributions and likelihood functions for ParamInsight (2D)
-# Generic 2-parameter model (a, b)
-# Log-likelihood via chi²
-# Random number generators: uniform and normal (Box-Muller)
+"""
+Distributions and likelihood functions for ParamInsight (2D)
 
-import math
+Assumptions:
+- Independent Gaussian observational errors
+- Heteroscedastic uncertainties provided by the user
+- dy_data is assumed to be strictly positive and correctly specified
+
+This module intentionally avoids automatic validation of uncertainties.
+"""
+
 import numpy as np
 
-# --------------------------
-# PDF / Likelihood functions
-# --------------------------
+# -------------------------------------------------
+# Log-likelihood
+# -------------------------------------------------
 
 def log_likelihood_2d(a, b, x_data, y_data, dy_data, model_func):
     """
-    Compute log-likelihood via chi² for two parameters (a, b).
-    L ~ exp(-chi²/2)
+    Compute Gaussian log-likelihood via chi-square statistic:
+
+        log L = -1/2 * sum_i [ (y_i - f(x_i; a, b))^2 / dy_i^2 ]
 
     Parameters:
-        a (float): model parameter 1
-        b (float): model parameter 2
-        x_data (array): observed x values
-        y_data (array): observed y values
-        dy_data (array): uncertainty of each y point
+        a, b (float): model parameters
+        x_data (array-like): observed x values
+        y_data (array-like): observed y values
+        dy_data (array-like): observational uncertainties (assumed valid)
         model_func (callable): model function f(x, a, b)
 
     Returns:
         float: log-likelihood value
     """
-    chi2 = 0.0
-    for xi, yi, dyi in zip(x_data, y_data, dy_data):
-        model_val = model_func(xi, a, b)
-        chi2 += ((model_val - yi) ** 2) / (dyi ** 2)
+    x = np.asarray(x_data)
+    y = np.asarray(y_data)
+    dy = np.asarray(dy_data)
+
+    model_y = model_func(x, a, b)
+
+    if not np.all(np.isfinite(model_y)):
+        return -np.inf
+
+    chi2 = np.sum(((y - model_y) / dy) ** 2)
+
     return -0.5 * chi2
 
-# --------------------------
-# Random number generators
-# --------------------------
+# -------------------------------------------------
+# Random number generators (Box–Muller)
+# -------------------------------------------------
 
 def rand_uniform(a=0.0, b=1.0):
     """
-    Generate a random number uniformly in [a, b)
+    Generate a uniform random number in [a, b).
     """
     return a + (b - a) * np.random.random()
 
 
 def rand_normal(mu=0.0, sigma=1.0):
     """
-    Generate a normal random number using Box-Muller transform
+    Generate a normal random number using the Box–Muller transform.
+
+    Notes:
+        Implemented explicitly for educational and transparency purposes.
+        No reliance on NumPy's normal RNG.
     """
-    u1 = np.random.random()
+    u1 = max(np.random.random(), 1e-12)
     u2 = np.random.random()
-    z0 = math.sqrt(-2 * math.log(u1)) * math.cos(2 * math.pi * u2)
-    return mu + z0 * sigma
+
+
+    z0 = np.sqrt(-2.0 * np.log(u1)) * np.cos(2.0 * np.pi * u2)
+    return mu + sigma * z0
