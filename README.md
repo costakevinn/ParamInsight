@@ -17,7 +17,6 @@ It provides a fully reproducible pipeline for generating observational data, eva
   * Posterior histograms
   * Parameter correlation scatter plots
   * Final parameter estimates with mean ± std and error metrics
-* **Reproducible data analysis** using fixed random seeds.
 * Optimized for **numerical analysis**, **statistical modeling**, and **data-driven insights**.
 
 ---
