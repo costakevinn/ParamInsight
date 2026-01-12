@@ -1,69 +1,118 @@
 # ParamInsight: MCMC Parameter Inference Tool (2D)
 
-ParamInsight is a lightweight Python tool for performing **Bayesian parameter inference** using **MCMC (Metropolis-Hastings)** on custom 2D models.  
-It supports user-defined models and observational data, generating **chains, statistical analysis, and visualizations**.  
-This project demonstrates capabilities in **data analysis, statistical inference, and MCMC implementation from scratch**.
+**ParamInsight** is a lightweight, fully transparent Python framework for **Bayesian parameter inference** using **Markov Chain Monte Carlo (MCMC)** methods.
+
+The project is designed to:
+- Implement **Metropolis–Hastings MCMC from scratch**
+- Infer parameters of **generic 2-parameter models**
+- Generate realistic observational data with **heteroscedastic uncertainties**
+- Provide clean statistical analysis and publication-ready visualizations
+
+This repository demonstrates solid skills in **statistical modeling, stochastic processes, numerical methods, and scientific Python**.
 
 ---
 
-## Logarithmic Example
+## Core Methodology
 
-**Model:** F(x) = a * log(b * x)
+### Bayesian Inference
 
-**Observational Data:**
+Given observational data \((x_i, y_i, \delta y_i)\) and a model \(f(x; a, b)\), ParamInsight evaluates the Gaussian log-likelihood:
 
-| x     | 1.0   | 1.5   | 2.0   | 2.5   | 3.0   | 3.5   | 4.0   | 4.5   | 5.0   | ... |
-|-------|-------|-------|-------|-------|-------|-------|-------|-------|-------|-----|
-| y     | 0.2   | 0.5   | 0.8   | 1.1   | 1.3   | 1.5   | 1.7   | 1.9   | 2.1   | ... |
-| dy    | 0.30  | 0.28  | 0.32  | 0.31  | 0.29  | 0.30  | 0.27  | 0.32  | 0.31  | ... |
+\[
+\log L(a, b) = -\frac{1}{2} \sum_i \left( \frac{y_i - f(x_i; a, b)}{\delta y_i} \right)^2
+\]
 
-**Estimated Parameters:**
-
-| Parameter | Mean ± Std  | True Value | Absolute Error | % Error |
-|-----------|------------|------------|----------------|---------|
-| a         | 1.51 ± 0.05 | 1.50       | 0.01           | 0.67%   |
-| b         | 0.48 ± 0.03 | 0.50       | 0.02           | 4.00%   |
-
-**Plots:**
-
-Trace plot | Histogram | Scatter
-:---------:|:---------:|:------:
-![Trace](plots/logarithmic/trace.png) | ![Histogram](plots/logarithmic/histogram.png) | ![Scatter](plots/logarithmic/scatter.png)
+This likelihood is explored using **Metropolis–Hastings MCMC**, producing samples from the posterior distribution of parameters \((a, b)\).
 
 ---
 
-## Features
+### MCMC Algorithm
 
-- Supports **custom 2D models**: linear, logarithmic, quadratic, inverse, etc.
-- Implements **Metropolis-Hastings MCMC** from scratch.
-- Generates:
-  - MCMC chains (`.npz`)
-  - Trace plots
-  - Histograms
-  - Scatter plots
-  - Final parameter analysis
-- Observational data saved in `.txt` files.
-- Fully reproducible using **fixed random seed**.
+- Metropolis–Hastings sampler
+- Proposal distribution: Gaussian (Box–Muller)
+- **n−1 / n−2 memory (inertia)** to improve exploration efficiency
+- Outputs:
+  - Parameter chains
+  - Log-likelihood evolution
+
+Implemented in `mcmc.py`.
 
 ---
 
-## Usage
+### Random Number Generation
 
-```bash
-python3 main.py
-```
+Gaussian noise is generated explicitly using the **Box–Muller transform**, ensuring full transparency and avoiding black-box RNG behavior.
 
-All results (data, plots, analysis) are stored in the `data/`, `plots/`, and `results/` directories respectively.
+Implemented in `distributions.py`.
 
 ---
 
-## Purpose
+## Observational Data Model
 
-ParamInsight was developed to **assist the scientific and data analysis community** in performing parameter inference with **transparent, fully customizable models**.  
-It demonstrates the ability to **implement statistical methods from scratch**, generate meaningful insights, and visualize results cleanly.
+ParamInsight generates **realistic observational datasets** with heteroscedastic uncertainties:
 
-## License
+\[
+\delta y_i = |\text{instrument error} + \text{trend}(x_i) + \text{Gaussian noise}|
+\]
 
-This project is licensed under the MIT License – see the [LICENSE](LICENSE) file for details.
+Observed values are then generated as:
 
+\[
+y_i = f(x_i; a_{\text{true}}, b_{\text{true}}) + \mathcal{N}(0, \delta y_i)
+\]
 
+This approach mimics real experimental and observational conditions.
+
+---
+
+## Implemented Models
+
+The project includes four example models:
+
+- **Linear:** \( f(x) = a x + b \)
+- **Logarithmic:** \( f(x) = a \log(bx) \)
+- **Quadratic:** \( f(x) = ax + bx^2 \)
+- **Inverse:** \( f(x) = \frac{a}{x} + b \)
+
+Each example:
+- Generates observational data
+- Runs MCMC inference
+- Saves chains, plots, and statistical summaries
+
+---
+
+## Example: Logarithmic Model
+
+**Model**
+\[
+f(x) = a \log(bx)
+\]
+
+**True parameters**
+- \(a = 1.5\)
+- \(b = 0.5\)
+
+**Outputs**
+- Trace plot (chain evolution)
+- Posterior histograms
+- Parameter correlation scatter plot
+
+| Trace | Histogram | Scatter |
+|------|-----------|---------|
+| ![Trace](plots/logarithmic/trace.png) | ![Histogram](plots/logarithmic/histogram.png) | ![Scatter](plots/logarithmic/scatter.png) |
+
+---
+
+## Project Structure
+
+```text
+ParamInsight/
+├── distributions.py   # Likelihood and RNG (Box–Muller)
+├── mcmc.py            # Metropolis–Hastings with memory
+├── examples.py        # Models and data generation
+├── utils.py           # Plotting and result saving
+├── main.py            # Entry point
+├── data/              # Observational data and chains
+├── plots/             # Trace, histogram, scatter plots
+├── results/           # Final parameter analysis
+└── docs/              # Technical documentation (PDF)
