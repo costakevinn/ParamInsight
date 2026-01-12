@@ -1,72 +1,77 @@
-# ParamInsight: Bayesian Parameter Inference Tool (2D)
+# ParamInsight: MCMC Parameter Inference Tool (2D)
 
-ParamInsight is a Python tool for **Bayesian parameter inference** using **Metropolis–Hastings MCMC** on 2-parameter models.
-It provides a fully reproducible pipeline for generating observational data, evaluating likelihoods, sampling posterior distributions, and producing statistical visualizations.
-
----
-
-## Key Features
-
-* Probabilistic modeling with **custom 2D models**: linear, logarithmic, quadratic, inverse.
-* **Bayesian inference** via Metropolis–Hastings MCMC with memory (momentum) for improved chain exploration.
-* **Uncertainty quantification** using heteroscedastic observational errors and Gaussian noise (Box–Muller).
-* Automatic generation of:
-
-  * MCMC chains (`.npz`)
-  * Trace plots
-  * Posterior histograms
-  * Parameter correlation scatter plots
-  * Final parameter estimates with mean ± std and error metrics
-* Optimized for **numerical analysis**, **statistical modeling**, and **data-driven insights**.
+ParamInsight is a Python tool for performing **Bayesian parameter inference** using **MCMC (Metropolis–Hastings)** on custom 2-parameter models.  
+It provides a complete workflow for **statistical modeling, data analysis, and uncertainty quantification** with reproducible outputs.
 
 ---
 
-## Mathematical Model
+## Statistical Model
 
-Observational data `(x_i, y_i)` with uncertainties `dy_i` are modeled with a function `F(x; a, b)` under **independent Gaussian noise**.
+Assuming independent Gaussian observational errors:
+
+- Observed data points: `(x_i, y_i)`
+- Measurement uncertainties: `dy_i`
+- Model function: `F(x; a, b)`
 
 The log-likelihood is:
 
-```
 log L(a, b) = -1/2 * sum_i [ (y_i - F(x_i; a, b))^2 / dy_i^2 ]
-```
 
-Maximizing this is equivalent to minimizing the **chi-square statistic**.
+Maximizing this corresponds to minimizing the chi-square statistic, a standard approach in statistical inference.
 
 ---
 
-## MCMC Algorithm
+## MCMC Sampling
 
-The sampler implements **Metropolis–Hastings** with optional **n−1 / n−2 memory**:
+Metropolis–Hastings algorithm with momentum (n−1 / n−2 memory) for efficient exploration:
 
-```
-a' = a_(n-1) + 0.5 * (a_(n-1) - a_(n-2)) + N(0, σ)
+a' = a_(n-1) + 0.5 * (a_(n-1) - a_(n-2)) + N(0, σ)  
 b' = b_(n-1) + 0.5 * (b_(n-1) - b_(n-2)) + N(0, σ)
-α = min(1, exp(logL_new - logL_old))
-```
 
-This enhances exploration in **correlated parameter spaces**, producing robust posterior estimates.
+Acceptance probability:
+
+α = min(1, exp(logL_new - logL_old))
+
+This approach handles correlated parameter spaces and improves convergence in 2D parameter inference.
 
 ---
 
 ## Example: Logarithmic Model
 
-**Model:** `F(x) = a * log(b * x)`
+**Model:**  
+F(x) = a * log(b * x)
 
-**True parameters:** `a = 1.5, b = 0.5`
+**True parameters:**  
+a = 1.5, b = 0.5
 
-**Estimated parameters (example run):**
+**Estimated parameters (sample run):**
 
-| Parameter | Mean ± Std  | True | % Error |
-| --------- | ----------- | ---- | ------- |
-| a         | 1.51 ± 0.05 | 1.50 | 0.67%   |
-| b         | 0.48 ± 0.03 | 0.50 | 4.00%   |
+| Parameter | Mean ± Std | True | % Error |
+|-----------|------------|------|---------|
+| a         | 1.51 ± 0.05 | 1.50 | 0.67% |
+| b         | 0.48 ± 0.03 | 0.50 | 4.00% |
 
-**Posterior diagnostics:**
+**Posterior Diagnostics:**
 
-| Trace                            | Histogram                            | Scatter                            |
-| -------------------------------- | ------------------------------------ | ---------------------------------- |
+| Trace | Histogram | Scatter |
+|-------|-----------|---------|
 | ![](plots/logarithmic/trace.png) | ![](plots/logarithmic/histogram.png) | ![](plots/logarithmic/scatter.png) |
+
+---
+
+## Features
+
+- Custom 2-parameter models: linear, logarithmic, quadratic, inverse  
+- Bayesian inference via Metropolis–Hastings MCMC  
+- Memory-based proposal to enhance exploration of correlated parameters  
+- Gaussian noise generation (Box–Muller) for realistic observations  
+- Handles heteroscedastic measurement uncertainties  
+- Automatic generation of:
+  - MCMC chains (`.npz`)
+  - Trace plots
+  - Posterior histograms
+  - Parameter correlation plots  
+- Fully reproducible using fixed random seed
 
 ---
 
@@ -76,23 +81,15 @@ This enhances exploration in **correlated parameter spaces**, producing robust p
 python3 main.py
 ```
 
-Outputs are stored in:
+Outputs are saved to:
 
-* `data/` — observations and chains
-* `plots/` — trace, histogram, and scatter visualizations
-* `results/` — numerical summaries and parameter estimates
-
----
-
-## Applications
-
-* **Statistical modeling** and parameter estimation.
-* **Data analysis** pipelines with uncertainty quantification.
-* **Probabilistic modeling** and stochastic simulations.
-* **Reproducible research** in Bayesian inference.
+- `data/` — observations and MCMC chains  
+- `plots/` — visual diagnostics  
+- `results/` — numerical summaries of inferred parameters
 
 ---
 
 ## License
 
 MIT License — see `LICENSE` for details.
+
