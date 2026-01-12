@@ -107,12 +107,50 @@ f(x) = a \log(bx)
 
 ```text
 ParamInsight/
-├── distributions.py   # Likelihood and RNG (Box–Muller)
-├── mcmc.py            # Metropolis–Hastings with memory
-├── examples.py        # Models and data generation
-├── utils.py           # Plotting and result saving
-├── main.py            # Entry point
-├── data/              # Observational data and chains
-├── plots/             # Trace, histogram, scatter plots
-├── results/           # Final parameter analysis
-└── docs/              # Technical documentation (PDF)
+├── distributions.py
+├── mcmc.py
+├── examples.py
+├── utils.py
+├── main.py
+├── data/
+├── plots/
+├── results/
+└── docs/
+```
+
+---
+
+## Usage
+
+Run all examples sequentially:
+
+```bash
+python3 main.py
+```
+
+All outputs are saved automatically into:
+- `data/`
+- `plots/`
+- `results/`
+
+A fixed random seed ensures **full reproducibility**.
+
+---
+
+## Purpose and Scope
+
+ParamInsight was developed as a **scientific and educational tool**, with emphasis on:
+
+- Transparency over abstraction
+- Statistical correctness
+- Reproducibility
+- Clean, interpretable results
+
+While the models are intentionally simple, the framework is generic and can be extended to other two-parameter inference problems.
+
+---
+
+## License
+
+This project is licensed under the **MIT License**.  
+See the [LICENSE](LICENSE) file for details.
