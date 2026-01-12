@@ -1,156 +1,120 @@
 # ParamInsight: MCMC Parameter Inference Tool (2D)
 
-**ParamInsight** is a lightweight, fully transparent Python framework for **Bayesian parameter inference** using **Markov Chain Monte Carlo (MCMC)** methods.
+ParamInsight is a lightweight Python tool for performing **Bayesian parameter inference**
+using **MCMC (Metropolis–Hastings)** on custom 2-parameter models.
 
-The project is designed to:
-- Implement **Metropolis–Hastings MCMC from scratch**
-- Infer parameters of **generic 2-parameter models**
-- Generate realistic observational data with **heteroscedastic uncertainties**
-- Provide clean statistical analysis and publication-ready visualizations
-
-This repository demonstrates solid skills in **statistical modeling, stochastic processes, numerical methods, and scientific Python**.
+The project is designed for **clarity, transparency, and reproducibility**, showcasing
+a full MCMC pipeline implemented **from scratch**, including likelihood evaluation,
+Gaussian noise generation (Box–Muller), and statistical visualization.
 
 ---
 
-## Core Methodology
+## Mathematical Model
 
-### Bayesian Inference
+ParamInsight assumes **independent Gaussian observational errors**.
 
-Given observational data \((x_i, y_i, \delta y_i)\) and a model \(f(x; a, b)\), ParamInsight evaluates the Gaussian log-likelihood:
+Given:
+- observed data points `(x_i, y_i)`
+- uncertainties `dy_i`
+- a model function `F(x; a, b)`
 
-\[
-\log L(a, b) = -\frac{1}{2} \sum_i \left( \frac{y_i - f(x_i; a, b)}{\delta y_i} \right)^2
-\]
+The log-likelihood is defined as:
 
-This likelihood is explored using **Metropolis–Hastings MCMC**, producing samples from the posterior distribution of parameters \((a, b)\).
+```
+log L(a, b) = -1/2 * sum_i [ (y_i - F(x_i; a, b))^2 / dy_i^2 ]
+```
 
----
-
-### MCMC Algorithm
-
-- Metropolis–Hastings sampler
-- Proposal distribution: Gaussian (Box–Muller)
-- **n−1 / n−2 memory (inertia)** to improve exploration efficiency
-- Outputs:
-  - Parameter chains
-  - Log-likelihood evolution
-
-Implemented in `mcmc.py`.
+Maximizing this quantity is equivalent to minimizing the chi-square statistic.
 
 ---
 
-### Random Number Generation
+## MCMC Algorithm
 
-Gaussian noise is generated explicitly using the **Box–Muller transform**, ensuring full transparency and avoiding black-box RNG behavior.
+ParamInsight uses a **Metropolis–Hastings sampler with memory (momentum)**.
 
-Implemented in `distributions.py`.
+At step `n`, a proposal is generated using:
 
----
+```
+a' = a_(n-1) + 0.5 * (a_(n-1) - a_(n-2)) + N(0, σ)
+b' = b_(n-1) + 0.5 * (b_(n-1) - b_(n-2)) + N(0, σ)
+```
 
-## Observational Data Model
+The proposal is accepted with probability:
 
-ParamInsight generates **realistic observational datasets** with heteroscedastic uncertainties:
+```
+α = min(1, exp(logL_new - logL_old))
+```
 
-\[
-\delta y_i = |\text{instrument error} + \text{trend}(x_i) + \text{Gaussian noise}|
-\]
-
-Observed values are then generated as:
-
-\[
-y_i = f(x_i; a_{\text{true}}, b_{\text{true}}) + \mathcal{N}(0, \delta y_i)
-\]
-
-This approach mimics real experimental and observational conditions.
+This simple inertia term improves exploration of correlated parameter spaces.
 
 ---
 
-## Implemented Models
-
-The project includes four example models:
-
-- **Linear:** \( f(x) = a x + b \)
-- **Logarithmic:** \( f(x) = a \log(bx) \)
-- **Quadratic:** \( f(x) = ax + bx^2 \)
-- **Inverse:** \( f(x) = \frac{a}{x} + b \)
-
-Each example:
-- Generates observational data
-- Runs MCMC inference
-- Saves chains, plots, and statistical summaries
-
----
-
-## Example: Logarithmic Model
+## Logarithmic Example
 
 **Model**
-\[
-f(x) = a \log(bx)
-\]
+```
+F(x) = a * log(b * x)
+```
 
 **True parameters**
-- \(a = 1.5\)
-- \(b = 0.5\)
+```
+a = 1.5
+b = 0.5
+```
 
-**Outputs**
-- Trace plot (chain evolution)
-- Posterior histograms
-- Parameter correlation scatter plot
+**Estimated parameters (example run)**
+
+| Parameter | Mean ± Std | True | % Error |
+|----------|------------|------|---------|
+| a | 1.51 ± 0.05 | 1.50 | 0.67% |
+| b | 0.48 ± 0.03 | 0.50 | 4.00% |
+
+**Posterior diagnostics**
 
 | Trace | Histogram | Scatter |
 |------|-----------|---------|
-| ![Trace](plots/logarithmic/trace.png) | ![Histogram](plots/logarithmic/histogram.png) | ![Scatter](plots/logarithmic/scatter.png) |
+| ![](plots/logarithmic/trace.png) | ![](plots/logarithmic/histogram.png) | ![](plots/logarithmic/scatter.png) |
 
 ---
 
-## Project Structure
+## Features
 
-```text
-ParamInsight/
-├── distributions.py
-├── mcmc.py
-├── examples.py
-├── utils.py
-├── main.py
-├── data/
-├── plots/
-├── results/
-└── docs/
-```
+- Custom 2-parameter models (linear, logarithmic, quadratic, inverse)
+- Metropolis–Hastings MCMC implemented from scratch
+- Optional momentum (n−1 / n−2 memory)
+- Box–Muller Gaussian noise generator
+- Heteroscedastic observational uncertainties
+- Automatic generation of:
+  - MCMC chains
+  - Trace plots
+  - Posterior histograms
+  - Parameter correlation plots
+- Reproducible results via fixed random seed
 
 ---
 
 ## Usage
 
-Run all examples sequentially:
-
-```bash
+```
 python3 main.py
 ```
 
-All outputs are saved automatically into:
-- `data/`
-- `plots/`
-- `results/`
-
-A fixed random seed ensures **full reproducibility**.
+All outputs are saved to:
+- `data/` — observations and chains
+- `plots/` — visual diagnostics
+- `results/` — numerical summaries
 
 ---
 
-## Purpose and Scope
+## Purpose
 
-ParamInsight was developed as a **scientific and educational tool**, with emphasis on:
-
-- Transparency over abstraction
-- Statistical correctness
-- Reproducibility
-- Clean, interpretable results
-
-While the models are intentionally simple, the framework is generic and can be extended to other two-parameter inference problems.
+ParamInsight is intended as:
+- an **educational tool** for Bayesian inference
+- a **portfolio project** demonstrating MCMC literacy
+- a **transparent alternative** to black-box fitting tools
 
 ---
 
 ## License
 
-This project is licensed under the **MIT License**.  
-See the [LICENSE](LICENSE) file for details.
+MIT License — see `LICENSE` for details.
