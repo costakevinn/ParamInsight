@@ -5,8 +5,10 @@ ParamInsight is a Python tool for Bayesian parameter inference using a custom Me
 The framework provides a complete statistical workflow for parameter estimation, posterior exploration, and uncertainty quantification with reproducible outputs.
 
 **Author:** Kevin Mota da Costa
+
 **Portfolio:** [https://costakevinn.github.io](https://costakevinn.github.io)
-**LinkedIn:** [https://linkedin.com/in/SEUUSER](https://linkedin.com/in/SEUUSER)
+
+**LinkedIn:** [https://linkedin.com/in/costakevinnn](https://linkedin.com/in/costakevinnn)
 
 ---
 
